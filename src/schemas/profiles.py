@@ -18,18 +18,17 @@ class ProfileRequestSchema(BaseModel):
     gender: str
     date_of_birth: date
     info: str
-    avatar: Optional[UploadFile] = None
+    avatar: UploadFile
 
     @classmethod
     def from_form(
-            cls,
-            first_name: str = Form(...),
-            last_name: str = Form(...),
-            gender: str = Form(...),
-            date_of_birth: date = Form(...),
-            info: str = Form(...),
-            avatar: UploadFile = File(...),
-
+        cls,
+        first_name: str = Form(...),
+        last_name: str = Form(...),
+        gender: str = Form(...),
+        date_of_birth: date = Form(...),
+        info: str = Form(...),
+        avatar: UploadFile = File(...),
     ):
         return cls(
             first_name=first_name,
@@ -38,7 +37,6 @@ class ProfileRequestSchema(BaseModel):
             date_of_birth=date_of_birth,
             info=info,
             avatar=avatar,
-
         )
 
     @field_validator("first_name", "last_name")
@@ -50,8 +48,6 @@ class ProfileRequestSchema(BaseModel):
         except Exception as e:
             raise HTTPException(status_code=422, detail=str(e))
 
-
-
     @field_validator("gender")
     @classmethod
     def validate_gender(cls, gender: str) -> str:
@@ -61,12 +57,14 @@ class ProfileRequestSchema(BaseModel):
         except ValueError as e:
             raise HTTPException(
                 status_code=422,
-                detail=[{
-                    "type": "value_error",
-                    "loc": ["gender"],
-                    "msg": str(e),
-                    "input": gender
-                }]
+                detail=[
+                    {
+                        "type": "value_error",
+                        "loc": ["gender"],
+                        "msg": str(e),
+                        "input": gender,
+                    }
+                ],
             )
 
     @field_validator("date_of_birth")
@@ -94,13 +92,17 @@ class ProfileRequestSchema(BaseModel):
         except ValueError as e:
             raise HTTPException(
                 status_code=422,
-                detail=[{
-                    "type": "value_error",
-                    "loc": ["avatar"],
-                    "msg": str(e),
-                    "input": avatar.filename
-                }]
+                detail=[
+                    {
+                        "type": "value_error",
+                        "loc": ["avatar"],
+                        "msg": str(e),
+                        "input": avatar.filename,
+                    }
+                ],
             )
+
+
 class ProfileResponseSchema(BaseModel):
     id: int
     user_id: int
