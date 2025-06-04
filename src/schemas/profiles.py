@@ -79,9 +79,18 @@ class ProfileRequestSchema(BaseModel):
     @field_validator("info")
     @classmethod
     def validate_info(cls, info: str) -> str:
-        if not info or not info.strip():
-            raise ValueError("Info field cannot be empty or contain only spaces.")
-        return info
+        cleaned_info = info.strip()
+        if not cleaned_info:
+            raise HTTPException(
+                status_code=422,
+                detail=[{
+                    "type": "value_error",
+                    "loc": ["info"],
+                    "msg": "Info field cannot be empty or contain only spaces.",
+                    "input": info
+                }]
+            )
+        return cleaned_info
 
     @field_validator("avatar")
     @classmethod
